@@ -1,8 +1,12 @@
+/**
+   @file conf.h
+   @author William A. Kennington III <william@wkennington.com>
+   @brief A configuration parser and manager, binding keys to values
+   read from the input file.
+   @warning Editing support is currently unavailable.
+**/
 /*
-  A configuration parser and manager, a file based serializing key ->
-  value map.
-
-  Copyright (C) 2012 William Kennington
+  Copyright (C) 2012 William A. Kennington III
 
   This file is part of AutoBuilder.
 
@@ -20,11 +24,6 @@
   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-/**
- * IMPORTANT NOTES:
- * Editing support is currently unavailable
- **/
-
 typedef enum _conf_err_t
   {
     CONF_OK = 0,
@@ -36,14 +35,34 @@ typedef struct _conf_t
   const char * filename;
 } conf_t;
 
-/* Initializes the configuration struct to the given filename */
+/**
+   @brief Initializes the configuration struct to the given filename.
+   @param conf The configuration struct to be initialized with data.
+   @param filename The name of the file where the configuration is
+   stored.
+   @return CONF_OK(0) on success or a positive error code.
+*/
 conf_err_t conf_init (conf_t * conf, const char * filename);
 
-/* Gets the value of a key -> value pair */
+/**
+   @brief Gets the value of a key -> value pair
+   @param conf The configuration struct.
+   @param key The key of the associated key -> value pair.
+   @return NULL on failure or the value of the assoicated key.
+**/
 const char * conf_get (conf_t * conf, const char * key);
 
-/* Destroys the configuration struct freeing self allocated heap memory*/
+/**
+   @brief Destroys the configuration struct freeing self allocated
+   heap memory
+   @param conf The configuration struct.
+   @return CONF_OK(0) on success or a  positive error code.
+**/
 conf_err_t conf_destroy (conf_t * conf);
 
-/* Gets the meaning of an error value */
+/**
+   @brief Generates a string describing the error code
+   @param err The error code to be described.
+   @return The string representing the error code.
+*/
 const char * conf_error_string (conf_err_t err);
