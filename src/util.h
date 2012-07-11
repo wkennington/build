@@ -37,7 +37,7 @@ void * memdup (const void * data, size_t len);
    @brief Dynamic String Copy
    @details Makes an exact replica of the string on the heap limited
    in length by the max_value, len. The string length will limited by either
-   a \null terminator or the len paramter. This is not the same as
+   a null terminator or the len paramter. This is not the same as
    strncpy.
    Note that this will ALWAYS null terminate the string.
    @param str Target String to Copy
