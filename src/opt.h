@@ -38,6 +38,7 @@ typedef struct _opt_t
 {
   const char * err; /**< Last Error String */
   uint8_t help; /**< Help Selected Flag */
+  const char * conf; /**< Path to the configuration file */
 } opt_t;
 
 /**
@@ -58,7 +59,16 @@ typedef enum _opt_err_tn
    @details Takes an option struct and populates it with data from the
    command line arguments passed by args.
 **/
-opt_err_t opt_parse (opt_t * opt, size_t count, const char ** args);
+opt_err_t opt_init (opt_t * opt, size_t count, char ** args);
+
+/**
+   @brief Destroys the OPT Struct
+   @details Frees any allocated memory in the opt struct and prepares
+   it for deletion. You must call this to prevent memory leaks.
+   @param opt The option structure to free
+   @return OPT_OK(0) on success or an error code on failure
+**/
+opt_err_t opt_destroy (opt_t * opt);
 
 /**
    @brief Get Detailed Error Message

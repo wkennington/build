@@ -25,7 +25,6 @@
 */
 
 /* Useful Definitions */
-#define CONF_FILE "autobuild.conf"
 #define HELP_TXT "Usage: autobuild [--help]"
 
 #include <stdlib.h>
@@ -42,7 +41,7 @@
    @return EXIT_SUCCESS on success or a non-zero integer on failure.
 **/
 int
-main (int argc, const char ** argv)
+main (int argc, char ** argv)
 {
   conf_t conf;
   conf_err_t cerr;
@@ -50,11 +49,12 @@ main (int argc, const char ** argv)
   opt_err_t oerr;
 
   /* Parse the command line */
-  oerr = opt_parse(&opt, argc, argv);
-  if (oerr != CONF_OK)
+  oerr = opt_init(&opt, argc, argv);
+  if (oerr != OPT_OK)
     {
       fprintf (stderr, "Command Line Error: %s\n%s\n",
                opt_get_err (&opt), HELP_TXT);
+      opt_destroy (&opt);
       return EXIT_FAILURE;
     }
   if (opt.help)
@@ -64,12 +64,18 @@ main (int argc, const char ** argv)
     }
 
   /* Parse the configuration */
-  cerr = conf_init (&conf, CONF_FILE);
+  cerr = conf_init (&conf, opt.conf);
   if (cerr != CONF_OK)
     {
       fprintf (stderr, "Configuration Error: %s\n", conf_get_err (&conf));
+      conf_destroy (&conf);
+      opt_destroy (&opt);
       return EXIT_FAILURE;
     }
+
+  /* Cleanup */
+  conf_destroy (&conf);
+  opt_destroy (&opt);
 
   return EXIT_SUCCESS;
 }

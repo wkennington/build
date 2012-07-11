@@ -27,10 +27,16 @@
 
 #include <stdlib.h>
 #include "conf.h"
+#include "util.h"
 
 conf_err_t
 conf_init (conf_t * conf, const char * filename)
 {
+  /* Initialize the struct */
+  conf->err = NULL;
+  conf->filename = cpstr (filename);
+
+  conf->err = cpstr ("WIP");
   return CONF_UNKNOWN;
 }
 
@@ -43,7 +49,11 @@ conf_get (conf_t * conf, const char * key)
 conf_err_t
 conf_destroy (conf_t * conf)
 {
-  return CONF_UNKNOWN;
+  if (conf->err != NULL)
+    free ((void*)conf->err);
+  if (conf->filename != NULL)
+    free ((void*)conf->filename);
+  return CONF_OK;
 }
 
 const char * conf_get_err (conf_t * conf)

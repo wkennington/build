@@ -26,14 +26,66 @@
 
 #include <stdlib.h>
 #include <string.h>
+#include <getopt.h>
+#include <unistd.h>
 #include "opt.h"
+#include "util.h"
+
+#define DEFAULT_CONFIG "autobuild.conf"
+#define OPTS "-hW:"
+static struct option LONG_OPTS [] = {
+  {"help", 0, NULL, 0},
+  {0, 0, 0, 0}
+};
 
 opt_err_t
-opt_parse (opt_t * opt, size_t count, const char ** args)
+opt_init (opt_t * opt, size_t count, char ** args)
 {
+  int ret, idx;
+
   /* Initialize the Default Options */
   opt->err = NULL;
   opt->help = 0;
+  opt->conf = cpstr (DEFAULT_CONFIG);
+
+  /* Prevent getopt from printing to stderr */
+  opterr = 0;
+
+  /* Iterate over every option matching them into the struct */
+  while ((ret = getopt_long (count, args, OPTS, LONG_OPTS, &idx)) != -1)
+    {
+      /* Non-standard option */
+      if (ret == 1)
+        continue;
+
+      /* Short option */
+      else if (ret != 0)
+        switch (ret)
+          {
+          case 'h':
+            opt->help = 1;
+          }
+      /* Long Options */
+      else
+        switch (idx)
+          {
+          case 0:
+            opt->help = 1;
+          }
+
+    }
+
+  return OPT_OK;
+}
+
+opt_err_t
+opt_destroy (opt_t * opt)
+{
+  if (opt->err != NULL)
+    free ((void*)opt->err);
+  if (opt->conf != NULL)
+    free ((void*)opt->conf);
+  return OPT_OK;
 }
 
 const char *
