@@ -26,6 +26,7 @@
 
 /* Useful Definitions */
 #define CONF_FILE "autobuild.conf"
+#define HELP_TXT "Usage: autobuild [--help]"
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -34,8 +35,8 @@
 #include "opt.h"
 
 /**
-   @brief The entry point for autobuilder
-   @param argc Number of arguments passed into argv
+   @brief AutoBuilder Entry Point
+   @param argc Number of arguments passed through argv
    @param argv String representation of arguments passed to the
    application
    @return EXIT_SUCCESS on success or a non-zero integer on failure.
@@ -52,15 +53,21 @@ main (int argc, const char ** argv)
   oerr = opt_parse(&opt, argc, argv);
   if (oerr != CONF_OK)
     {
-      fprintf (stderr, "Option Error: %s\n", opt_err_str (oerr));
+      fprintf (stderr, "Command Line Error: %s\n%s\n",
+               opt_get_err (&opt), HELP_TXT);
       return EXIT_FAILURE;
+    }
+  if (opt.help)
+    {
+      fprintf (stderr, "%s\n", HELP_TXT);
+      return EXIT_SUCCESS;
     }
 
   /* Parse the configuration */
   cerr = conf_init (&conf, CONF_FILE);
   if (cerr != CONF_OK)
     {
-      fprintf (stderr, "Configuration Error: %s\n", conf_err_str (cerr));
+      fprintf (stderr, "Configuration Error: %s\n", conf_get_err (&conf));
       return EXIT_FAILURE;
     }
 

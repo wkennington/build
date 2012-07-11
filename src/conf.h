@@ -42,6 +42,7 @@ typedef enum _conf_err_t
 **/
 typedef struct _conf_t
 {
+  const char * err; /**< Last Error String */
   const char * filename; /**< The path of the configuration file. */
 } conf_t;
 
@@ -61,6 +62,15 @@ conf_err_t conf_init (conf_t * conf, const char * filename);
    @return NULL on failure or the value of the assoicated key.
 **/
 const char * conf_get (conf_t * conf, const char * key);
+
+/**
+   @brief Get Detailed Error Message
+   @details Generates a string with a detailed error message
+   describing the most recent error event
+   @param conf The configuration structure which had an error
+   @return Error String or NULL if no error
+**/
+const char * conf_get_err (conf_t * conf);
 
 /**
    @brief Destroys the configuration struct freeing self allocated
