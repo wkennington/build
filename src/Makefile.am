@@ -18,5 +18,5 @@
 ACLOCAL_AMFLAGS = -I ../m4
 bin_PROGRAMS = autobuild
 AM_CFLAGS = $(LIBDEPS_CFLAGS) $(POSTGRESQL_CFLAGS)
-autobuild_SOURCES = main.c
+autobuild_SOURCES = conf.c main.c opt.c
 autobuild_LDADD = -lpthread $(LIBDEPS_LIBS) $(POSTGRESQL_LIBS)

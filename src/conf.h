@@ -1,7 +1,8 @@
 /**
    @file conf.h
    @author William A. Kennington III <william@wkennington.com>
-   @brief A configuration parser and manager, binding keys to values
+   @brief Configuration Parser
+   @details A configuration parser and manager, binding keys to values
    read from the input file.
    @warning Editing support is currently unavailable.
 **/
@@ -24,15 +25,24 @@
   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#ifndef _CONF_H
+#define _CONF_H
+
+/**
+   @brief Configuration Error Codes
+**/
 typedef enum _conf_err_t
   {
-    CONF_OK = 0,
-    CONF_UNKNOWN
+    CONF_OK = 0, /**< Success */
+    CONF_UNKNOWN /**< Unknown Cause of Error */
   } conf_err_t;
 
+/**
+   @brief
+**/
 typedef struct _conf_t
 {
-  const char * filename;
+  const char * filename; /**< The path of the configuration file. */
 } conf_t;
 
 /**
@@ -65,4 +75,6 @@ conf_err_t conf_destroy (conf_t * conf);
    @param err The error code to be described.
    @return The string representing the error code.
 */
-const char * conf_error_string (conf_err_t err);
+const char * conf_err_str (conf_err_t err);
+
+#endif

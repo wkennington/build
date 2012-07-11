@@ -31,14 +31,17 @@
 #include <stdio.h>
 #include <string.h>
 #include "conf.h"
+#include "opt.h"
 
 /**
    @brief The entry point for autobuilder
    @param argc Number of arguments passed into argv
-   @param argv String representation of arguments passed to the application
+   @param argv String representation of arguments passed to the
+   application
+   @return EXIT_SUCCESS on success or a non-zero integer on failure.
 **/
 int
-main (int argc, char ** argv)
+main (int argc, const char ** argv)
 {
   conf_t conf;
   conf_err_t cerr;
@@ -46,13 +49,18 @@ main (int argc, char ** argv)
   opt_err_t oerr;
 
   /* Parse the command line */
-  opt_parse(&opt, argc, argv);
+  oerr = opt_parse(&opt, argc, argv);
+  if (oerr != CONF_OK)
+    {
+      fprintf (stderr, "Option Error: %s\n", opt_err_str (oerr));
+      return EXIT_FAILURE;
+    }
 
   /* Parse the configuration */
   cerr = conf_init (&conf, CONF_FILE);
-  if (conf == NULL)
+  if (cerr != CONF_OK)
     {
-      fprintf ("Configuration Error: %s\n", conf_error_str (cerr));
+      fprintf (stderr, "Configuration Error: %s\n", conf_err_str (cerr));
       return EXIT_FAILURE;
     }
 
