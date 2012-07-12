@@ -34,16 +34,28 @@
 typedef enum _conf_err_t
   {
     CONF_OK = 0, /**< Success */
+    CONF_NO_FILE, /**< File does not exist */
     CONF_UNKNOWN /**< Unknown Cause of Error */
   } conf_err_t;
 
 /**
-   @brief
+   @brief Key value pair string
+**/
+struct _conf_kv_t
+{
+  char * key;
+  char * val;
+};
+
+/**
+   @brief Configuration Data Struct
 **/
 typedef struct _conf_t
 {
-  const char * err; /**< Last Error String */
-  const char * filename; /**< The path of the configuration file. */
+  char * err; /**< Last Error String */
+  char * filename; /**< The path of the configuration file. */
+  struct _conf_kv_t * data; /**< The data struct for kv pairs.*/
+  size_t data_len;
 } conf_t;
 
 /**
@@ -61,7 +73,7 @@ conf_err_t conf_init (conf_t * conf, const char * filename);
    @param key The key of the associated key -> value pair.
    @return NULL on failure or the value of the assoicated key.
 **/
-const char * conf_get (conf_t * conf, const char * key);
+char * conf_get (conf_t * conf, const char * key);
 
 /**
    @brief Get Detailed Error Message

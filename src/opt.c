@@ -35,13 +35,13 @@
 
 #define OPTS "-c:hW:"
 const static struct option LONG_OPTS [] = {
-  {"config", 1, NULL, 0},
-  {"help", 0, NULL, 0},
+  {"config", 1, NULL, 'c'},
+  {"help", 0, NULL, 'h'},
   {0, 0, 0, 0}
 };
 
 opt_err_t
-opt_init (opt_t * opt, size_t count, char ** args)
+opt_init (opt_t * opt, size_t count, char ** args, int err)
 {
   int ret, idx;
 
@@ -50,8 +50,8 @@ opt_init (opt_t * opt, size_t count, char ** args)
   opt->help = 0;
   opt->conf = cpstr (DEFAULT_CONFIG);
 
-  /* Prevent getopt from printing to stderr */
-  opterr = 0;
+  /* Set getopt to print errors based on user feedback */
+  opterr = err;
 
   /* Iterate over every option matching them into the struct */
   while ((ret = getopt_long (count, args, OPTS, LONG_OPTS, &idx)) != -1)
@@ -60,26 +60,31 @@ opt_init (opt_t * opt, size_t count, char ** args)
       if (ret == 1)
         continue;
 
+      /* Invalid Option */
+      else if (ret == '?')
+        {
+          if (err == 0)
+            opt->err = cpstrf ("Invalid Option '-%c'\n", optopt);
+          return OPT_INVALID;
+        }
+
       /* Short option */
       else if (ret != 0)
         switch (ret)
           {
           case 'c':
             opt->conf = cpstr (optarg);
+            break;
           case 'h':
             opt->help = 1;
+            break;
           }
 
-      /* Long Options */
+      /* nLong Options */
       else
         switch (idx)
           {
-          case 0:
-            opt->conf = cpstr (optarg);
-          case 1:
-            opt->help = 1;
           }
-
     }
 
   return OPT_OK;

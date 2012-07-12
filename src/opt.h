@@ -46,8 +46,9 @@ typedef struct _opt_t
 **/
 typedef enum _opt_err_tn
   {
-    OPT_OK = 0, /**< Success**/
-    OPT_UNKNOWN /**< An Unknown Error **/
+    OPT_OK = 0, /**< Success */
+    OPT_INVALID, /**< Invalid Argument */
+    OPT_UNKNOWN /**< An Unknown Error */
   } opt_err_t;
 
 /**
@@ -55,11 +56,12 @@ typedef enum _opt_err_tn
    @param opt A pointer to an option structure
    @param count The number of strings in the array args
    @param args The array of strings to be parsed
+   @param err 0 to disable automatic error printing or 1 to enable printing.
    @return OPT_OK(0) on success or an error code on failure.
    @details Takes an option struct and populates it with data from the
    command line arguments passed by args.
 **/
-opt_err_t opt_init (opt_t * opt, size_t count, char ** args);
+opt_err_t opt_init (opt_t * opt, size_t count, char ** args, int err);
 
 /**
    @brief Destroys the OPT Struct

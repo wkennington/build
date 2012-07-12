@@ -24,6 +24,8 @@
 */
 
 #include <stdlib.h>
+#include <stdio.h>
+#include <stdarg.h>
 #include <string.h>
 
 void *
@@ -65,5 +67,34 @@ cpstrn (const char * str, size_t len)
 char *
 cpstr (const char * str)
 {
-  return memdup (str, (strlen (str)+1) * sizeof (char));
+  return (char*) memdup (str, (strlen (str)+1) * sizeof (char));
+}
+
+char *
+cpstrf (const char * format, ...)
+{
+  va_list args;
+  char * ret;
+  int ret_len;
+
+  /* Setup the Variable Argument List */
+  va_start (args, format);
+
+  /* Get the length of the string */
+  ret_len = vsnprintf (NULL, 0, format, args) + 1;
+
+  /* Reset the args list */
+  va_end (args);
+  va_start (args, format);
+
+  /* Generate the string */
+  ret = (char*) malloc (ret_len * sizeof (char));
+  if (ret == NULL)
+    return NULL;
+  vsnprintf (ret, ret_len, format, args);
+
+  /* Cleanup the arguments list */
+  va_end (args);
+
+  return ret;
 }

@@ -53,3 +53,12 @@ char * cpstrn (const char * str, size_t len);
    @return A newly allocated copy of str.
 **/
 char * cpstr (const char * str);
+
+/**
+   @brief Copies the formatted String to the Heap
+   @details Formats the stirng according to the specifications and
+   places it into a chunk of heap memory.
+   @param format The string formatting function.
+   @return A newly allocated copy of str.
+**/
+char * cpstrf (const char * str, ...);

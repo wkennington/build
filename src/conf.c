@@ -26,21 +26,32 @@
 */
 
 #include <stdlib.h>
+#include <stdio.h>
 #include "conf.h"
 #include "util.h"
 
 conf_err_t
 conf_init (conf_t * conf, const char * filename)
 {
+  FILE * file;
+
   /* Initialize the struct */
   conf->err = NULL;
   conf->filename = cpstr (filename);
+  conf->data = NULL;
 
-  conf->err = cpstr ("WIP");
-  return CONF_UNKNOWN;
+  /* Attempt to open the file */
+  file = fopen (filename, "r");
+  if (file == NULL)
+    {
+      conf->err = cpstrf ("Invalid File: %s\n", filename);
+      return CONF_NO_FILE;
+    }
+
+  return CONF_OK;
 }
 
-const char *
+char *
 conf_get (conf_t * conf, const char * key)
 {
   return NULL;
@@ -49,10 +60,23 @@ conf_get (conf_t * conf, const char * key)
 conf_err_t
 conf_destroy (conf_t * conf)
 {
+  size_t i;
+
+  /* Free Data Members */
   if (conf->err != NULL)
     free ((void*)conf->err);
   if (conf->filename != NULL)
     free ((void*)conf->filename);
+  if (conf->data != NULL)
+    {
+      for (i = 0; i < conf->data_len; i++)
+        {
+          free (conf->data[i].key);
+          free (conf->data[i].val);
+        }
+      free ((void*)conf->data);
+    }
+
   return CONF_OK;
 }
 

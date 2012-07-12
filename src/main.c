@@ -26,6 +26,7 @@
 
 /* Useful Definitions */
 #define HELP_TXT "Usage: autobuild [--help]"
+#define SHORT_HELP "Try 'autobuild --help' for more information."
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -47,13 +48,13 @@ main (int argc, char ** argv)
   conf_err_t cerr;
   opt_t opt;
   opt_err_t oerr;
+  char * db_db;
 
   /* Parse the command line */
-  oerr = opt_init(&opt, argc, argv);
+  oerr = opt_init(&opt, argc, argv, 1);
   if (oerr != OPT_OK)
     {
-      fprintf (stderr, "Command Line Error: %s\n%s\n",
-               opt_get_err (&opt), HELP_TXT);
+      fprintf (stderr, "%s\n", SHORT_HELP);
       opt_destroy (&opt);
       return EXIT_FAILURE;
     }
@@ -67,7 +68,17 @@ main (int argc, char ** argv)
   cerr = conf_init (&conf, opt.conf);
   if (cerr != CONF_OK)
     {
-      fprintf (stderr, "Configuration Error: %s\n", conf_get_err (&conf));
+      fprintf (stderr, "Configuration Error: %s", conf_get_err (&conf));
+      conf_destroy (&conf);
+      opt_destroy (&opt);
+      return EXIT_FAILURE;
+    }
+
+  /* Read DB_DB */
+  db_db = conf_get (&conf, "DB_DB");
+  if (db_db == NULL)
+    {
+      fprintf (stderr, "Configuration Error: Couldn't get key DB_DB\n");
       conf_destroy (&conf);
       opt_destroy (&opt);
       return EXIT_FAILURE;
