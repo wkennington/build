@@ -32,8 +32,10 @@
 #include "util.h"
 
 #define DEFAULT_CONFIG "autobuild.conf"
-#define OPTS "-hW:"
-static struct option LONG_OPTS [] = {
+
+#define OPTS "-c:hW:"
+const static struct option LONG_OPTS [] = {
+  {"config", 1, NULL, 0},
   {"help", 0, NULL, 0},
   {0, 0, 0, 0}
 };
@@ -62,14 +64,19 @@ opt_init (opt_t * opt, size_t count, char ** args)
       else if (ret != 0)
         switch (ret)
           {
+          case 'c':
+            opt->conf = cpstr (optarg);
           case 'h':
             opt->help = 1;
           }
+
       /* Long Options */
       else
         switch (idx)
           {
           case 0:
+            opt->conf = cpstr (optarg);
+          case 1:
             opt->help = 1;
           }
 
