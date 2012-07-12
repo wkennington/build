@@ -48,7 +48,7 @@ main (int argc, char ** argv)
   conf_err_t cerr;
   opt_t opt;
   opt_err_t oerr;
-  char * db_db;
+  const char *db_type, *db_host, *db_port, *db_user, *db_pass, *db_db;
 
   /* Parse the command line */
   oerr = opt_init(&opt, argc, argv, 1);
@@ -74,15 +74,16 @@ main (int argc, char ** argv)
       return EXIT_FAILURE;
     }
 
-  /* Read DB_DB */
-  db_db = conf_get (&conf, "DB_DB");
-  if (db_db == NULL)
-    {
-      fprintf (stderr, "Configuration Error: Couldn't get key DB_DB\n");
-      conf_destroy (&conf);
-      opt_destroy (&opt);
-      return EXIT_FAILURE;
-    }
+  /* Read Database Options */
+  db_type = conf_get (&conf, "DB_TYPE");
+  db_host = conf_get (&conf, "DB_HOST");
+  db_port = conf_get (&conf, "DB_PORT");
+  db_user = conf_get (&conf, "DB_USER");
+  db_pass = conf_get (&conf, "DB_PASS");
+  db_db   = conf_get (&conf, "DB_DB");
+
+  /* Connect to the database */
+  //db_connect (db_type, db_host, db_port, db_user, db_pass, db_db);
 
   /* Cleanup */
   conf_destroy (&conf);

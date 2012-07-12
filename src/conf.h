@@ -35,6 +35,8 @@ typedef enum _conf_err_t
   {
     CONF_OK = 0, /**< Success */
     CONF_NO_FILE, /**< File does not exist */
+    CONF_MALLOC_FAILED, /**< Malloc failed to produce a new block */
+    CONF_TOO_LARGE, /**< The conf file is too large to process */
     CONF_UNKNOWN /**< Unknown Cause of Error */
   } conf_err_t;
 

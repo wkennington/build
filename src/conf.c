@@ -27,18 +27,28 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
+#include "buffer.h"
 #include "conf.h"
 #include "util.h"
+
+#define BUFF 4096
+#define MALLOC_FAILED "Malloc Failed\n"
+#define TOO_LARGE "Configuration File Too Large\n"
 
 conf_err_t
 conf_init (conf_t * conf, const char * filename)
 {
   FILE * file;
+  buffer_t buff;
+  uint8_t lbuff[BUFF];
+  int read;
 
   /* Initialize the struct */
   conf->err = NULL;
   conf->filename = cpstr (filename);
   conf->data = NULL;
+  conf->data_len = 0;
 
   /* Attempt to open the file */
   file = fopen (filename, "r");
@@ -48,12 +58,60 @@ conf_init (conf_t * conf, const char * filename)
       return CONF_NO_FILE;
     }
 
+  /* Load the entire file into memory */
+  if (buffer_init (&buff, BUFF, BUFF<<3) == BUFF_MALLOC_FAILED)
+    {
+      fclose (file);
+      conf->err = cpstr (MALLOC_FAILED);
+      return CONF_MALLOC_FAILED;
+    }
+  while ((read = fread (lbuff, sizeof (uint8_t), BUFF, file)) > 0)
+    switch (buffer_add (&buff, lbuff, read))
+      {
+      case BUFF_MALLOC_FAILED:
+        conf->err = cpstr (MALLOC_FAILED);
+        buffer_destroy (&buff);
+        fclose (file);
+        return CONF_MALLOC_FAILED;
+      case BUFF_TOO_SMALL:
+        conf->err = cpstr (TOO_LARGE);
+        buffer_destroy (&buff);
+        fclose (file);
+        return CONF_TOO_LARGE;
+      }
+
+  printf ("%s\n", buff.data);
+
+  /* Cleanup */
+  buffer_destroy (&buff);
+  fclose (file);
+
   return CONF_OK;
 }
 
 char *
 conf_get (conf_t * conf, const char * key)
 {
+  size_t left, right, median;
+  int ret;
+
+  /* Initialize LR */
+  left = 0;
+  right = conf->data_len;
+
+  /* Binary Search over the sorted array */
+  while (left < right)
+    {
+      median = (left+right)>>1;
+      ret = strcmp (conf->data[median].key, key);
+      if (ret == 0)
+        return conf->data[median].val;
+      else if (ret > 0)
+        left = median + 1;
+      else
+        right = median;
+    }
+
   return NULL;
 }
 

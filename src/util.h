@@ -61,4 +61,4 @@ char * cpstr (const char * str);
    @param format The string formatting function.
    @return A newly allocated copy of str.
 **/
-char * cpstrf (const char * str, ...);
+char * cpstrf (const char * format, ...);

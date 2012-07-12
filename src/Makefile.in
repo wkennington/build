@@ -85,8 +85,8 @@ CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)"
 PROGRAMS = $(bin_PROGRAMS)
-am_autobuild_OBJECTS = conf.$(OBJEXT) main.$(OBJEXT) opt.$(OBJEXT) \
-	util.$(OBJEXT)
+am_autobuild_OBJECTS = buffer.$(OBJEXT) conf.$(OBJEXT) main.$(OBJEXT) \
+	opt.$(OBJEXT) util.$(OBJEXT)
 autobuild_OBJECTS = $(am_autobuild_OBJECTS)
 am__DEPENDENCIES_1 =
 autobuild_DEPENDENCIES = $(am__DEPENDENCIES_1)
@@ -262,7 +262,7 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 ACLOCAL_AMFLAGS = -I ../m4
 AM_CFLAGS = $(LIBDEPS_CFLAGS) $(POSTGRESQL_CFLAGS)
-autobuild_SOURCES = conf.c main.c opt.c util.c
+autobuild_SOURCES = buffer.c conf.c main.c opt.c util.c
 autobuild_LDADD = -lpthread $(LIBDEPS_LIBS) $(POSTGRESQL_LIBS)
 all: all-am
 
@@ -354,6 +354,7 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/buffer.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/conf.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/main.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/opt.Po@am__quote@
