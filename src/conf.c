@@ -43,6 +43,7 @@ conf_init (conf_t * conf, const char * filename)
   buffer_t buff;
   uint8_t lbuff[BUFF];
   int read;
+  size_t line_ct, i, st, eq;
 
   /* Initialize the struct */
   conf->err = NULL;
@@ -80,11 +81,33 @@ conf_init (conf_t * conf, const char * filename)
         return CONF_TOO_LARGE;
       }
 
-  printf ("%s\n", buff.data);
+  /* Close File Handle */
+  fclose (file);
+
+  /* Parse each line looking for errors */
+  line_ct = 0;
+  st = 0;
+  eq = 0;
+  for (i = 0; i < buff.len; i++)
+    switch (buff.data[i])
+      {
+      case '=':
+        eq = i;
+        break;
+      case '\n':
+        line_ct++;
+        if (eq <= st && buff.data[st] != '#')
+          {
+            conf->err = cpstrf ("Parse Error: Invalid Line #%d\n", line_ct);
+            buffer_destroy (&buff);
+            return CONF_PARSE_ERR;
+          }
+        st = i+1;
+        break;
+      }
 
   /* Cleanup */
   buffer_destroy (&buff);
-  fclose (file);
 
   return CONF_OK;
 }
