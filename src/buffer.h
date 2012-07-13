@@ -77,7 +77,7 @@ buffer_err_t buffer_extend (buffer_t * buff);
    @brief Copies data onto the end of the buffer
    @details Handles allocations and copying of the data into the
    buffer's data segment.
-   @param buffer The buffer to copy data into
+   @param buff The buffer to copy data into
    @param data The data segment to copy
    @param len The length of the data segment
    @return An error code

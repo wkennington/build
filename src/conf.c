@@ -36,6 +36,31 @@
 #define MALLOC_FAILED "Malloc Failed\n"
 #define TOO_LARGE "Configuration File Too Large\n"
 
+inline static char * 
+trim_str (char * str, size_t len)
+{
+  /* Trim the spaces from the front */
+  while (str[0] == ' ' || str[0] == '\t' || str[0] == '\r' || str[0] == '\n')
+    str++;
+
+  /* Work backward to place the end of string */
+  len--;
+  while (str[len] == ' ' || str[len] == '\t' || str[len] == '\r' || str[len] == '\n')
+    len--;
+  str[len+1] = '\0';
+
+  return str;
+}
+
+inline static char *
+cleanup_str (char * str, int key)
+{
+  /* Start by trimming the str */
+  str = trim_str (str, strlen (str));
+
+  return str;
+}
+
 conf_err_t
 conf_init (conf_t * conf, const char * filename)
 {
@@ -44,6 +69,7 @@ conf_init (conf_t * conf, const char * filename)
   uint8_t lbuff[BUFF];
   int read;
   size_t line_ct, i, st, eq;
+  char *tmp_key, *tmp_val;
 
   /* Initialize the struct */
   conf->err = NULL;
@@ -96,18 +122,51 @@ conf_init (conf_t * conf, const char * filename)
         break;
       case '\n':
         line_ct++;
-        if (eq <= st && buff.data[st] != '#')
+
+        /* Break down the line into a string */
+        tmp_key = buff.data + st;
+        buff.data[i] = '\0';
+        tmp_key = trim_str (tmp_key, i-st+1);
+
+        /* Empty or comment line */
+        if (strlen (tmp_key) == 0 || tmp_key[0] == '#')
+          break;
+
+        /* Validate Line */
+        if (eq <= st)
           {
             conf->err = cpstrf ("Parse Error: Invalid Line #%d\n", line_ct);
             buffer_destroy (&buff);
             return CONF_PARSE_ERR;
           }
+
+        /* Trim value and key strings */
+        buff.data[eq] = '\0';
+        tmp_val = buff.data + eq + 1;
+        tmp_key = cleanup_str (tmp_key, 1);
+        if (tmp_key == NULL)
+          {
+            conf->err = cpstrf ("Key Error on Line #%d\n", line_ct);
+            return CONF_PARSE_ERR;
+          }
+        tmp_val = cleanup_str (tmp_val, 0);
+        if (tmp_val == NULL)
+          {
+            conf->err = cpstrf ("Value Error on Line #%d\n", line_ct);
+            return CONF_PARSE_ERR;
+          }
+
+        /* Store the values */
+        printf ("Key: %s\nValue: %s\n", tmp_key, tmp_val);
+
         st = i+1;
         break;
       }
 
   /* Cleanup */
   buffer_destroy (&buff);
+
+  /* Sort the array */
 
   return CONF_OK;
 }
